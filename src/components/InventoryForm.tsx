@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,10 +23,16 @@ import { FittingSection } from './inventory/FittingSection';
 import { NutSection } from './inventory/NutSection';
 import { WireSection } from './inventory/WireSection';
 import { SimpleSection } from './inventory/SimpleSection';
+import { SearchAndFilter, FilterCategory } from './SearchAndFilter';
 import { Clipboard, Package, Share2 } from 'lucide-react';
 
 export const InventoryForm = () => {
   const { toast } = useToast();
+  
+  // Search and Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<FilterCategory[]>([]);
+  const [showOnlySelected, setShowOnlySelected] = useState(false);
   
   const [formData, setFormData] = useState<InventoryFormData>({
     siteName: '',
@@ -54,6 +60,71 @@ export const InventoryForm = () => {
     nitrogenCylinders: 0,
     acGas: ''
   });
+
+  // Filter logic
+  const shouldShowSection = (category: FilterCategory) => {
+    if (selectedCategories.length === 0) return true;
+    return selectedCategories.includes(category);
+  };
+
+  const matchesSearch = (text: string) => {
+    if (!searchTerm) return true;
+    return text.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+
+  // Calculate item counts for each category
+  const itemCounts = useMemo((): Record<FilterCategory, number> => {
+    const counts: Record<FilterCategory, number> = {
+      pipes: 0,
+      insulation: 0, 
+      fittings: 0,
+      nuts: 0,
+      wires: 0,
+      tools: 0,
+      materials: 0
+    };
+
+    // Count pipes
+    counts.pipes = formData.pipes.filter(pipe => 
+      !showOnlySelected || (pipe.selected && pipe.quantity > 0)
+    ).length;
+
+    // Count insulation
+    counts.insulation = formData.insulation.filter(ins => 
+      !showOnlySelected || (ins.selected && (ins.volume > 0 || ins.length > 0))
+    ).length;
+
+    // Count fittings
+    counts.fittings = formData.fittings.filter(fit => 
+      !showOnlySelected || (fit.selected && (fit.elbowQty > 0 || fit.couplingQty > 0))
+    ).length;
+
+    // Count nuts
+    counts.nuts = formData.nuts.filter(nut => 
+      !showOnlySelected || (nut.selected && nut.quantity > 0)
+    ).length;
+
+    // Count wires
+    counts.wires = formData.wires.filter(wire => 
+      !showOnlySelected || (wire.selected && wire.length > 0)
+    ).length;
+
+    // Count tools - flaring tool
+    counts.tools = formData.flaringTool ? 1 : 0;
+
+    // Count materials - all other items
+    let materialsCount = 0;
+    if (formData.brazingRods > 0) materialsCount++;
+    if (formData.butaneQty > 0) materialsCount++;
+    if (formData.drainHeaterLength > 0) materialsCount++;
+    if (formData.hatlonLength > 0) materialsCount++;
+    if (formData.oxygenCylinders > 0) materialsCount++;
+    if (formData.nitrogenCylinders > 0) materialsCount++;
+    if (formData.acGas) materialsCount++;
+    counts.materials = materialsCount;
+
+    return counts;
+  }, [formData, showOnlySelected]);
 
   const generateOutput = () => {
     const out: string[] = [];
@@ -294,35 +365,61 @@ export const InventoryForm = () => {
             </CardContent>
           </Card>
 
-          <PipeSection 
-            pipes={formData.pipes}
-            onUpdate={(pipes) => setFormData({...formData, pipes})}
-          />
-          
-          <InsulationSection 
-            insulation={formData.insulation}
-            onUpdate={(insulation) => setFormData({...formData, insulation})}
-          />
-          
-          <FittingSection 
-            fittings={formData.fittings}
-            onUpdate={(fittings) => setFormData({...formData, fittings})}
-          />
-          
-          <NutSection 
-            nuts={formData.nuts}
-            onUpdate={(nuts) => setFormData({...formData, nuts})}
+          {/* Search and Filter Bar */}
+          <SearchAndFilter
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedCategories={selectedCategories}
+            onCategoryChange={setSelectedCategories}
+            showOnlySelected={showOnlySelected}
+            onShowSelectedChange={setShowOnlySelected}
+            itemCounts={itemCounts}
           />
 
-          <SimpleSection 
-            formData={formData}
-            onUpdate={setFormData}
-          />
+          {/* Inventory Sections */}
+          {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
+            <PipeSection 
+              pipes={formData.pipes}
+              onUpdate={(pipes) => setFormData({...formData, pipes})}
+            />
+          )}
           
-          <WireSection 
-            wires={formData.wires}
-            onUpdate={(wires) => setFormData({...formData, wires})}
-          />
+          {(shouldShowSection('insulation') && (!searchTerm || matchesSearch('insulation'))) && (
+            <InsulationSection 
+              insulation={formData.insulation}
+              onUpdate={(insulation) => setFormData({...formData, insulation})}
+            />
+          )}
+          
+          {(shouldShowSection('fittings') && (!searchTerm || matchesSearch('fittings elbow coupling'))) && (
+            <FittingSection 
+              fittings={formData.fittings}
+              onUpdate={(fittings) => setFormData({...formData, fittings})}
+            />
+          )}
+          
+          {(shouldShowSection('nuts') && (!searchTerm || matchesSearch('flare nuts'))) && (
+            <NutSection 
+              nuts={formData.nuts}
+              onUpdate={(nuts) => setFormData({...formData, nuts})}
+            />
+          )}
+
+          {(shouldShowSection('tools') || shouldShowSection('materials')) && (
+            (!searchTerm || matchesSearch('flaring tool brazing rods butane lpg drain heater hatlon oxygen nitrogen ac gas')) && (
+              <SimpleSection 
+                formData={formData}
+                onUpdate={setFormData}
+              />
+            )
+          )}
+          
+          {(shouldShowSection('wires') && (!searchTerm || matchesSearch('wires electrical'))) && (
+            <WireSection 
+              wires={formData.wires}
+              onUpdate={(wires) => setFormData({...formData, wires})}
+            />
+          )}
 
           <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
             <CardContent className="pt-6">
