@@ -1,11 +1,15 @@
 import React, { useState, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { inventoryFormSchema, type InventoryFormValues } from '@/schemas/inventorySchema';
 import { 
   InventoryFormData, 
   PipeData, 
@@ -35,32 +39,40 @@ export const InventoryForm = () => {
   const [selectedCategories, setSelectedCategories] = useState<FilterCategory[]>([]);
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   
-  const [formData, setFormData] = useState<InventoryFormData>({
-    siteName: '',
-    pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', selected: false })),
-    insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
-    fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, selected: false })),
-    nuts: NUT_SIZES.map(size => ({ size, quantity: 0, selected: false })),
-    flaringTool: false,
-    brazingRods: 0,
-    butaneSize: '',
-    butaneQty: 0,
-    drainHeaterLength: 0,
-    hatlonLength: 0,
-    hatlonUnit: '',
-    monsoonTapeLength: 0,
-    monsoonTapeQty: 0,
-    wireTapeLength: 0,
-    wireTapeQty: 0,
-    cableTies: 0,
-    cableTray: 0,
-    casingPatti: 0,
-    clamPatti: 0,
-    wires: WIRE_SIZES.map(size => ({ size, length: 0, cores: 2, selected: false })),
-    oxygenCylinders: 0,
-    nitrogenCylinders: 0,
-    acGas: ''
+  // React Hook Form with Zod validation
+  const form = useForm<InventoryFormValues>({
+    resolver: zodResolver(inventoryFormSchema),
+    mode: 'onChange', // Enable real-time validation
+    defaultValues: {
+      siteName: '',
+      pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', selected: false })),
+      insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
+      fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, selected: false })),
+      nuts: NUT_SIZES.map(size => ({ size, quantity: 0, selected: false })),
+      flaringTool: false,
+      brazingRods: 0,
+      butaneSize: '' as const,
+      butaneQty: 0,
+      drainHeaterLength: 0,
+      hatlonLength: 0,
+      hatlonUnit: '' as const,
+      monsoonTapeLength: 0,
+      monsoonTapeQty: 0,
+      wireTapeLength: 0,
+      wireTapeQty: 0,
+      cableTies: 0,
+      cableTray: 0,
+      casingPatti: 0,
+      clamPatti: 0,
+      wires: WIRE_SIZES.map(size => ({ size, length: 0, cores: 2, selected: false })),
+      oxygenCylinders: 0,
+      nitrogenCylinders: 0,
+      acGas: ''
+    },
   });
+
+  // Watch form data for filtering and calculations
+  const formData = form.watch();
 
   // Filter logic
   const shouldShowSection = (category: FilterCategory) => {
@@ -127,20 +139,20 @@ export const InventoryForm = () => {
     return counts;
   }, [formData, showOnlySelected]);
 
-  const generateOutput = () => {
+  const generateOutput = (data: InventoryFormValues) => {
     const out: string[] = [];
     
-    if (formData.siteName) {
-      out.unshift(`Project: ${formData.siteName}\n`);
+    if (data.siteName) {
+      out.unshift(`Project: ${data.siteName}\n`);
     }
 
     // Flaring Tool
-    if (formData.flaringTool) {
+    if (data.flaringTool) {
       out.push('🔧 Flaring Tool: ✓ Required');
     }
 
     // Copper pipes
-    const pipeOutputs = formData.pipes
+    const pipeOutputs = data.pipes
       .filter(pipe => pipe.selected && pipe.quantity > 0)
       .map(pipe => `${pipe.size}" ${pipe.type} ×${pipe.quantity}`);
     
@@ -149,7 +161,7 @@ export const InventoryForm = () => {
     }
 
     // Insulation
-    const insulationOutputs = formData.insulation
+    const insulationOutputs = data.insulation
       .filter(ins => ins.selected && (ins.volume > 0 || ins.length > 0))
       .map(ins => `${ins.size}" (Vol:${ins.volume}mm) ${ins.length}${ins.unit}`);
     
@@ -158,7 +170,7 @@ export const InventoryForm = () => {
     }
 
     // Pipe Fittings
-    const fittingOutputs = formData.fittings
+    const fittingOutputs = data.fittings
       .filter(fit => fit.selected)
       .map(fit => {
         const fittings = [];
@@ -173,7 +185,7 @@ export const InventoryForm = () => {
     }
 
     // Flare Nuts
-    const nutOutputs = formData.nuts
+    const nutOutputs = data.nuts
       .filter(nut => nut.selected && nut.quantity > 0)
       .map(nut => `${nut.size}" ×${nut.quantity}`);
     
@@ -182,24 +194,24 @@ export const InventoryForm = () => {
     }
 
     // Simple sections
-    if (formData.brazingRods > 0) {
-      out.push(`🔥 Brazing Rods: ×${formData.brazingRods} pieces`);
+    if (data.brazingRods > 0) {
+      out.push(`🔥 Brazing Rods: ×${data.brazingRods} pieces`);
     }
 
-    if (formData.butaneSize && formData.butaneQty > 0) {
-      out.push(`⛽ Butane / LPG: ${formData.butaneSize} cylinder ×${formData.butaneQty}`);
+    if (data.butaneSize && data.butaneQty > 0) {
+      out.push(`⛽ Butane / LPG: ${data.butaneSize} cylinder ×${data.butaneQty}`);
     }
 
-    if (formData.drainHeaterLength > 0) {
-      out.push(`🔌 Drain Heater: ${formData.drainHeaterLength} ft`);
+    if (data.drainHeaterLength > 0) {
+      out.push(`🔌 Drain Heater: ${data.drainHeaterLength} ft`);
     }
 
-    if (formData.hatlonLength > 0 && formData.hatlonUnit) {
-      out.push(`📏 Hatlon: ${formData.hatlonLength} ${formData.hatlonUnit}`);
+    if (data.hatlonLength > 0 && data.hatlonUnit) {
+      out.push(`📏 Hatlon: ${data.hatlonLength} ${data.hatlonUnit}`);
     }
 
     // Wires
-    const wireOutputs = formData.wires
+    const wireOutputs = data.wires
       .filter(wire => wire.selected && wire.length > 0)
       .map(wire => `${wire.size}sq mm ${wire.cores}-core ${wire.length}m`);
     
@@ -207,16 +219,16 @@ export const InventoryForm = () => {
       out.push(`⚡ Wires: ${wireOutputs.join(', ')}`);
     }
 
-    if (formData.oxygenCylinders > 0) {
-      out.push(`🫧 Oxygen Cylinders: ×${formData.oxygenCylinders} cylinders`);
+    if (data.oxygenCylinders > 0) {
+      out.push(`🫧 Oxygen Cylinders: ×${data.oxygenCylinders} cylinders`);
     }
 
-    if (formData.nitrogenCylinders > 0) {
-      out.push(`💨 Nitrogen Cylinders: ×${formData.nitrogenCylinders} cylinders`);
+    if (data.nitrogenCylinders > 0) {
+      out.push(`💨 Nitrogen Cylinders: ×${data.nitrogenCylinders} cylinders`);
     }
 
-    if (formData.acGas) {
-      out.push(`❄️ AC Gas: ${formData.acGas} type/kg`);
+    if (data.acGas) {
+      out.push(`❄️ AC Gas: ${data.acGas} type/kg`);
     }
 
     const message = '📋 INVENTORY SUMMARY\n' + '═'.repeat(30) + '\n\n' + out.join('\n\n') + '\n\n' + '═'.repeat(30);
@@ -224,9 +236,8 @@ export const InventoryForm = () => {
     return message;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const output = generateOutput();
+  const handleSubmit = (data: InventoryFormValues) => {
+    const output = generateOutput(data);
     
     // Open in new window
     const w = window.open('', '_blank');
@@ -325,7 +336,7 @@ export const InventoryForm = () => {
   };
 
   const copyToClipboard = () => {
-    const output = generateOutput();
+    const output = generateOutput(form.getValues());
     navigator.clipboard.writeText(output).then(() => {
       toast({
         title: "Copied!",
@@ -346,26 +357,34 @@ export const InventoryForm = () => {
         </div>
 
         <ScrollArea className="h-[calc(100vh-12rem)]">
-          <form id="inventory-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 pb-20 sm:pb-24">
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
-              <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
-                <CardTitle className="text-lg sm:text-xl">Project Information</CardTitle>
-              </CardHeader>
-              <CardContent className="px-4 sm:px-6">
-                <div className="space-y-3 sm:space-y-4">
-                  <div>
-                    <Label htmlFor="siteName" className="text-sm sm:text-base font-semibold">Site Name</Label>
-                    <Input
-                      id="siteName"
-                      placeholder="e.g. working address"
-                      value={formData.siteName}
-                      onChange={(e) => setFormData({...formData, siteName: e.target.value})}
-                      className="mt-1 sm:mt-2 text-sm sm:text-base h-10 sm:h-12"
+          <Form {...form}>
+            <form id="inventory-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 sm:space-y-6 pb-20 sm:pb-24">
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
+                <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                  <CardTitle className="text-lg sm:text-xl">Project Information</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 sm:px-6">
+                  <div className="space-y-3 sm:space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="siteName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base font-semibold">Site Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g. working address"
+                              {...field}
+                              className="mt-1 sm:mt-2 text-sm sm:text-base h-10 sm:h-12"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
             {/* Search and Filter Bar */}
             <SearchAndFilter
@@ -378,65 +397,60 @@ export const InventoryForm = () => {
               itemCounts={itemCounts}
             />
 
-            {/* Inventory Sections */}
-            <div className="space-y-4 sm:space-y-6">
-            {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
-              <PipeSection 
-                pipes={formData.pipes}
-                onUpdate={(pipes) => setFormData({...formData, pipes})}
-              />
-            )}
-            
-            {(shouldShowSection('insulation') && (!searchTerm || matchesSearch('insulation'))) && (
-              <InsulationSection 
-                insulation={formData.insulation}
-                onUpdate={(insulation) => setFormData({...formData, insulation})}
-              />
-            )}
-            
-            {(shouldShowSection('fittings') && (!searchTerm || matchesSearch('fittings elbow coupling'))) && (
-              <FittingSection 
-                fittings={formData.fittings}
-                onUpdate={(fittings) => setFormData({...formData, fittings})}
-              />
-            )}
-            
-            {(shouldShowSection('nuts') && (!searchTerm || matchesSearch('flare nuts'))) && (
-              <NutSection 
-                nuts={formData.nuts}
-                onUpdate={(nuts) => setFormData({...formData, nuts})}
-              />
-            )}
-
-            {(shouldShowSection('tools') || shouldShowSection('materials')) && (
-              (!searchTerm || matchesSearch('flaring tool brazing rods butane lpg drain heater hatlon oxygen nitrogen ac gas')) && (
-                <SimpleSection 
-                  formData={formData}
-                  onUpdate={setFormData}
+              {/* Inventory Sections */}
+              <div className="space-y-4 sm:space-y-6">
+              {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
+                <PipeSection 
+                  form={form}
                 />
-              )
-            )}
-            
-            {(shouldShowSection('wires') && (!searchTerm || matchesSearch('wires electrical'))) && (
-              <WireSection 
-                wires={formData.wires}
-                onUpdate={(wires) => setFormData({...formData, wires})}
-              />
-            )}
-            </div>
-          </form>
+              )}
+              
+              {(shouldShowSection('insulation') && (!searchTerm || matchesSearch('insulation'))) && (
+                <InsulationSection 
+                  form={form}
+                />
+              )}
+              
+              {(shouldShowSection('fittings') && (!searchTerm || matchesSearch('fittings elbow coupling'))) && (
+                <FittingSection 
+                  form={form}
+                />
+              )}
+              
+              {(shouldShowSection('nuts') && (!searchTerm || matchesSearch('flare nuts'))) && (
+                <NutSection 
+                  form={form}
+                />
+              )}
+
+              {(shouldShowSection('tools') || shouldShowSection('materials')) && (
+                (!searchTerm || matchesSearch('flaring tool brazing rods butane lpg drain heater hatlon oxygen nitrogen ac gas')) && (
+                  <SimpleSection 
+                    form={form}
+                  />
+                )
+              )}
+              
+              {(shouldShowSection('wires') && (!searchTerm || matchesSearch('wires electrical'))) && (
+                <WireSection 
+                  form={form}
+                />
+              )}
+              </div>
+            </form>
+          </Form>
         </ScrollArea>
 
         {/* Fixed Action Buttons at Bottom */}
         <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-3 sm:p-4">
           <div className="mx-auto max-w-4xl">
             <div className="flex gap-3 sm:gap-4 flex-col sm:flex-row">
-              <Button 
-                type="submit" 
-                form="inventory-form"
-                className="flex-1 h-12 sm:h-14 text-sm sm:text-lg font-semibold bg-gradient-to-r from-primary to-info hover:from-primary/90 hover:to-info/90"
-                onClick={handleSubmit}
-              >
+                <Button 
+                  type="submit" 
+                  form="inventory-form"
+                  className="flex-1 h-12 sm:h-14 text-sm sm:text-lg font-semibold bg-gradient-to-r from-primary to-info hover:from-primary/90 hover:to-info/90"
+                  disabled={!form.formState.isValid}
+                >
                 <Package className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Generate Summary
               </Button>

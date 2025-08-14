@@ -1,23 +1,19 @@
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { InsulationData } from '@/types/inventory';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { InventoryFormValues } from '@/schemas/inventorySchema';
 
 interface InsulationSectionProps {
-  insulation: InsulationData[];
-  onUpdate: (insulation: InsulationData[]) => void;
+  form: UseFormReturn<InventoryFormValues>;
 }
 
-export const InsulationSection: React.FC<InsulationSectionProps> = ({ insulation, onUpdate }) => {
-  const updateInsulation = (index: number, updates: Partial<InsulationData>) => {
-    const newInsulation = insulation.map((ins, i) => 
-      i === index ? { ...ins, ...updates } : ins
-    );
-    onUpdate(newInsulation);
-  };
+export const InsulationSection: React.FC<InsulationSectionProps> = ({ form }) => {
+  const insulation = form.watch('insulation');
 
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
@@ -33,12 +29,20 @@ export const InsulationSection: React.FC<InsulationSectionProps> = ({ insulation
         <div className="space-y-4">
           {insulation.map((ins, index) => (
             <div key={ins.size} className="flex items-center gap-4 p-4 rounded-lg border bg-background/50 hover:bg-background/80 transition-colors">
-              <Checkbox
-                checked={ins.selected}
-                onCheckedChange={(checked) => 
-                  updateInsulation(index, { selected: !!checked })
-                }
-                className="scale-125"
+              <FormField
+                control={form.control}
+                name={`insulation.${index}.selected`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="scale-125"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
               
               <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
@@ -48,64 +52,94 @@ export const InsulationSection: React.FC<InsulationSectionProps> = ({ insulation
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Volume (mm)</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    value={ins.volume || ''}
-                    onChange={(e) => 
-                      updateInsulation(index, { volume: Number(e.target.value) || 0 })
-                    }
-                    placeholder="Vol"
-                    className="h-10"
-                    disabled={!ins.selected}
+                  <FormField
+                    control={form.control}
+                    name={`insulation.${index}.volume`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            max="1000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Vol"
+                            className="h-10"
+                            disabled={!ins.selected}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Length</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={ins.length || ''}
-                    onChange={(e) => 
-                      updateInsulation(index, { length: Number(e.target.value) || 0 })
-                    }
-                    placeholder="Length"
-                    className="h-10"
-                    disabled={!ins.selected}
+                  <FormField
+                    control={form.control}
+                    name={`insulation.${index}.length`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="10000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Length"
+                            className="h-10"
+                            disabled={!ins.selected}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Unit</Label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => updateInsulation(index, { unit: 'ft' })}
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        ins.unit === 'ft'
-                          ? 'bg-success text-success-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                      disabled={!ins.selected}
-                    >
-                      ft
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateInsulation(index, { unit: 'm' })}
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        ins.unit === 'm'
-                          ? 'bg-success text-success-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                      disabled={!ins.selected}
-                    >
-                      m
-                    </button>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name={`insulation.${index}.unit`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => field.onChange('ft')}
+                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                field.value === 'ft'
+                                  ? 'bg-success text-success-foreground'
+                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                              }`}
+                              disabled={!ins.selected}
+                            >
+                              ft
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => field.onChange('m')}
+                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                field.value === 'm'
+                                  ? 'bg-success text-success-foreground'
+                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                              }`}
+                              disabled={!ins.selected}
+                            >
+                              m
+                            </button>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
                 
                 <div className="text-sm text-muted-foreground">

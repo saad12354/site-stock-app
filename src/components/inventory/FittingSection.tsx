@@ -1,23 +1,19 @@
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { FittingData } from '@/types/inventory';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { InventoryFormValues } from '@/schemas/inventorySchema';
 
 interface FittingSectionProps {
-  fittings: FittingData[];
-  onUpdate: (fittings: FittingData[]) => void;
+  form: UseFormReturn<InventoryFormValues>;
 }
 
-export const FittingSection: React.FC<FittingSectionProps> = ({ fittings, onUpdate }) => {
-  const updateFitting = (index: number, updates: Partial<FittingData>) => {
-    const newFittings = fittings.map((fitting, i) => 
-      i === index ? { ...fitting, ...updates } : fitting
-    );
-    onUpdate(newFittings);
-  };
+export const FittingSection: React.FC<FittingSectionProps> = ({ form }) => {
+  const fittings = form.watch('fittings');
 
   return (
     <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
@@ -33,12 +29,20 @@ export const FittingSection: React.FC<FittingSectionProps> = ({ fittings, onUpda
         <div className="space-y-4">
           {fittings.map((fitting, index) => (
             <div key={fitting.size} className="flex items-center gap-4 p-4 rounded-lg border bg-background/50 hover:bg-background/80 transition-colors">
-              <Checkbox
-                checked={fitting.selected}
-                onCheckedChange={(checked) => 
-                  updateFitting(index, { selected: !!checked })
-                }
-                className="scale-125"
+              <FormField
+                control={form.control}
+                name={`fittings.${index}.selected`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="scale-125"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
               
               <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
@@ -48,33 +52,51 @@ export const FittingSection: React.FC<FittingSectionProps> = ({ fittings, onUpda
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Elbow Qty</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={fitting.elbowQty || ''}
-                    onChange={(e) => 
-                      updateFitting(index, { elbowQty: Number(e.target.value) || 0 })
-                    }
-                    placeholder="Qty"
-                    className="h-10"
-                    disabled={!fitting.selected}
+                  <FormField
+                    control={form.control}
+                    name={`fittings.${index}.elbowQty`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="1000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Qty"
+                            className="h-10"
+                            disabled={!fitting.selected}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Coupling Qty</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={fitting.couplingQty || ''}
-                    onChange={(e) => 
-                      updateFitting(index, { couplingQty: Number(e.target.value) || 0 })
-                    }
-                    placeholder="Qty"
-                    className="h-10"
-                    disabled={!fitting.selected}
+                  <FormField
+                    control={form.control}
+                    name={`fittings.${index}.couplingQty`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="1000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Qty"
+                            className="h-10"
+                            disabled={!fitting.selected}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 

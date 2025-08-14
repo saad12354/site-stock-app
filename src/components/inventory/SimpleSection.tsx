@@ -1,20 +1,19 @@
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { InventoryFormData } from '@/types/inventory';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { InventoryFormValues } from '@/schemas/inventorySchema';
 
 interface SimpleSectionProps {
-  formData: InventoryFormData;
-  onUpdate: (formData: InventoryFormData) => void;
+  form: UseFormReturn<InventoryFormValues>;
 }
 
-export const SimpleSection: React.FC<SimpleSectionProps> = ({ formData, onUpdate }) => {
-  const updateField = (field: keyof InventoryFormData, value: any) => {
-    onUpdate({ ...formData, [field]: value });
-  };
+export const SimpleSection: React.FC<SimpleSectionProps> = ({ form }) => {
+  const formData = form.watch();
 
   return (
     <div className="space-y-6">
@@ -25,12 +24,22 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ formData, onUpdate
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 p-4 rounded-lg border bg-background/50">
-            <Checkbox
-              checked={formData.flaringTool}
-              onCheckedChange={(checked) => updateField('flaringTool', !!checked)}
-              className="scale-125"
+            <FormField
+              control={form.control}
+              name="flaringTool"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="scale-125"
+                    />
+                  </FormControl>
+                  <FormLabel className="text-base font-medium cursor-pointer">Flaring Tool Required</FormLabel>
+                </FormItem>
+              )}
             />
-            <Label className="text-base font-medium cursor-pointer">Flaring Tool Required</Label>
           </div>
         </CardContent>
       </Card>
@@ -42,18 +51,27 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ formData, onUpdate
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Quantity</Label>
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={formData.brazingRods || ''}
-                onChange={(e) => updateField('brazingRods', Number(e.target.value) || 0)}
-                placeholder="Quantity"
-                className="mt-2 h-12"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="brazingRods"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      placeholder="Quantity"
+                      className="mt-2 h-12"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </CardContent>
       </Card>
@@ -65,45 +83,62 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ formData, onUpdate
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Size</Label>
-              <div className="flex gap-4 mt-2">
-                <button
-                  type="button"
-                  onClick={() => updateField('butaneSize', 'Small')}
-                  className={`flex-1 py-3 rounded-lg text-base font-medium transition-colors ${
-                    formData.butaneSize === 'Small'
-                      ? 'bg-success text-success-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  Small
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateField('butaneSize', 'Big')}
-                  className={`flex-1 py-3 rounded-lg text-base font-medium transition-colors ${
-                    formData.butaneSize === 'Big'
-                      ? 'bg-success text-success-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  Big
-                </button>
-              </div>
-            </div>
-            <div>
-              <Label className="text-base font-medium">Quantity</Label>
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={formData.butaneQty || ''}
-                onChange={(e) => updateField('butaneQty', Number(e.target.value) || 0)}
-                placeholder="Quantity"
-                className="mt-2 h-12"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="butaneSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Size</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-4 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => field.onChange('Small')}
+                        className={`flex-1 py-3 rounded-lg text-base font-medium transition-colors ${
+                          field.value === 'Small'
+                            ? 'bg-success text-success-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                      >
+                        Small
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => field.onChange('Big')}
+                        className={`flex-1 py-3 rounded-lg text-base font-medium transition-colors ${
+                          field.value === 'Big'
+                            ? 'bg-success text-success-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                      >
+                        Big
+                      </button>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="butaneQty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      placeholder="Quantity"
+                      className="mt-2 h-12"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </CardContent>
       </Card>
@@ -116,96 +151,150 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ formData, onUpdate
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
-                <Label className="text-base font-medium">🔌 Drain Heater Length (ft)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.drainHeaterLength || ''}
-                  onChange={(e) => updateField('drainHeaterLength', Number(e.target.value) || 0)}
-                  placeholder="Length"
-                  className="mt-2 h-12"
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="drainHeaterLength"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">🔌 Drain Heater Length (ft)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Length"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <div>
-                <Label className="text-base font-medium">📏 Hatlon Length</Label>
-                <div className="space-y-2 mt-2">
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formData.hatlonLength || ''}
-                    onChange={(e) => updateField('hatlonLength', Number(e.target.value) || 0)}
-                    placeholder="Length"
-                    className="h-12"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => updateField('hatlonUnit', 'ft')}
-                      className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
-                        formData.hatlonUnit === 'ft'
-                          ? 'bg-success text-success-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      ft
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateField('hatlonUnit', 'm')}
-                      className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
-                        formData.hatlonUnit === 'm'
-                          ? 'bg-success text-success-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      meter
-                    </button>
-                  </div>
-                </div>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="hatlonLength"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">📏 Hatlon Length</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          placeholder="Length"
+                          className="mt-2 h-12"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="hatlonUnit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => field.onChange('ft')}
+                            className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                              field.value === 'ft'
+                                ? 'bg-success text-success-foreground'
+                                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                            }`}
+                          >
+                            ft
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => field.onChange('m')}
+                            className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                              field.value === 'm'
+                                ? 'bg-success text-success-foreground'
+                                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                            }`}
+                          >
+                            meter
+                          </button>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
             <div className="space-y-4">
-              <div>
-                <Label className="text-base font-medium">🫧 Oxygen Cylinders</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.oxygenCylinders || ''}
-                  onChange={(e) => updateField('oxygenCylinders', Number(e.target.value) || 0)}
-                  placeholder="Quantity"
-                  className="mt-2 h-12"
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="oxygenCylinders"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">🫧 Oxygen Cylinders</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Quantity"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <div>
-                <Label className="text-base font-medium">💨 Nitrogen Cylinders</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.nitrogenCylinders || ''}
-                  onChange={(e) => updateField('nitrogenCylinders', Number(e.target.value) || 0)}
-                  placeholder="Quantity"
-                  className="mt-2 h-12"
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="nitrogenCylinders"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">💨 Nitrogen Cylinders</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Quantity"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
-              <div>
-                <Label className="text-base font-medium">❄️ AC Gas Type/kg</Label>
-                <Input
-                  type="text"
-                  value={formData.acGas}
-                  onChange={(e) => updateField('acGas', e.target.value)}
-                  placeholder="404, 404A, 410, etc."
-                  className="mt-2 h-12"
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="acGas"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">❄️ AC Gas Type/kg</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        {...field}
+                        placeholder="404, 404A, 410, etc."
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
         </CardContent>
