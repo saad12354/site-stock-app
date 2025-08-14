@@ -65,20 +65,20 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   const hasActiveFilters = searchTerm || selectedCategories.length > 0 || showOnlySelected;
 
   return (
-    <div className="bg-card rounded-lg border shadow-sm p-6 mb-6">
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+    <div className="bg-card rounded-lg border shadow-sm p-3 sm:p-4 lg:p-6">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
         {/* Search Input */}
-        <div className="relative flex-1 min-w-0">
+        <div className="relative flex-1 min-w-0 w-full sm:w-auto">
           <Label htmlFor="search" className="sr-only">Search inventory items</Label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               id="search"
               type="text"
-              placeholder="Search inventory items (size, type, etc.)"
+              placeholder="Search inventory items..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 pr-10 h-12 text-base border-border focus:border-primary focus:ring-primary bg-background"
+              className="pl-8 sm:pl-10 pr-8 sm:pr-10 h-10 sm:h-12 text-sm sm:text-base border-border focus:border-primary focus:ring-primary bg-background"
             />
             {searchTerm && (
               <Button
@@ -86,27 +86,27 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={clearSearch}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-muted"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             )}
           </div>
         </div>
 
         {/* Filter Controls */}
-        <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex flex-wrap gap-2 sm:gap-3 items-center w-full sm:w-auto justify-stretch sm:justify-start">
           {/* Category Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-12 px-4 bg-background border-border hover:bg-muted focus:border-primary"
+                className="h-10 sm:h-12 px-3 sm:px-4 border-border hover:border-primary bg-background min-w-0 flex-1 sm:flex-none"
               >
-                <Filter className="h-4 w-4 mr-2" />
-                Categories
+                <Filter className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-sm sm:text-base">Filter</span>
                 {selectedCategories.length > 0 && (
-                  <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs">
+                  <Badge variant="secondary" className="ml-1 sm:ml-2 h-4 sm:h-5 px-1 sm:px-1.5 text-xs">
                     {selectedCategories.length}
                   </Badge>
                 )}
@@ -140,25 +140,23 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Show Only Selected */}
+          {/* Selected Only Toggle */}
           <Button
-            type="button"
             variant={showOnlySelected ? "default" : "outline"}
             onClick={() => onShowSelectedChange(!showOnlySelected)}
-            className="h-12 px-4 whitespace-nowrap"
+            className="h-10 sm:h-12 px-3 sm:px-4 border-border hover:border-primary bg-background min-w-0 flex-1 sm:flex-none text-sm sm:text-base"
           >
             Selected Only
           </Button>
 
-          {/* Clear Filters */}
+          {/* Clear All Filters */}
           {hasActiveFilters && (
             <Button
-              type="button"
               variant="ghost"
               onClick={clearAllFilters}
-              className="h-12 px-4 text-muted-foreground hover:text-foreground"
+              className="h-10 sm:h-12 px-3 sm:px-4 hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 flex-1 sm:flex-none text-sm sm:text-base"
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Clear
             </Button>
           )}
@@ -167,49 +165,56 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border">
-          {searchTerm && (
-            <Badge variant="secondary" className="flex items-center gap-2">
-              Search: "{searchTerm}"
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={clearSearch}
-                className="h-4 w-4 p-0 hover:bg-muted-foreground/20"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          )}
-          {selectedCategories.map(category => (
-            <Badge key={category} variant="secondary" className="flex items-center gap-2">
-              {categoryLabels[category]}
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleCategory(category)}
-                className="h-4 w-4 p-0 hover:bg-muted-foreground/20"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          ))}
-          {showOnlySelected && (
-            <Badge variant="secondary" className="flex items-center gap-2">
-              Selected Items Only
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onShowSelectedChange(false)}
-                className="h-4 w-4 p-0 hover:bg-muted-foreground/20"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          )}
+        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-border">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
+            <span className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 sm:mb-0">Active filters:</span>
+            
+            {searchTerm && (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs h-6 sm:h-7">
+                <Search className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                <span className="max-w-20 sm:max-w-none truncate">"{searchTerm}"</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onSearchChange('')}
+                  className="h-3 w-3 sm:h-4 sm:w-4 p-0 hover:bg-transparent ml-1"
+                >
+                  <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                </Button>
+              </Badge>
+            )}
+
+            {selectedCategories.map((category) => (
+              <Badge key={category} variant="outline" className="flex items-center gap-1 text-xs h-6 sm:h-7">
+                <span className="truncate">{categoryLabels[category]}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleCategory(category)}
+                  className="h-3 w-3 sm:h-4 sm:w-4 p-0 hover:bg-transparent ml-1"
+                >
+                  <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                </Button>
+              </Badge>
+            ))}
+
+            {showOnlySelected && (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs h-6 sm:h-7">
+                Selected Only
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onShowSelectedChange(false)}
+                  className="h-3 w-3 sm:h-4 sm:w-4 p-0 hover:bg-transparent ml-1"
+                >
+                  <X className="h-2 w-2 sm:h-3 sm:w-3" />
+                </Button>
+              </Badge>
+            )}
+          </div>
         </div>
       )}
     </div>

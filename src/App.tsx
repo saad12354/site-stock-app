@@ -13,7 +13,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <div className="max-w-7xl mx-auto p-8 text-center min-h-screen">
+      <div className="min-h-screen">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />

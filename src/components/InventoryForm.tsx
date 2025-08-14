@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { 
   InventoryFormData, 
@@ -334,113 +335,123 @@ export const InventoryForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-            <Package className="text-primary" />
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-4xl px-3 sm:px-4 lg:px-6">
+        <div className="text-center py-6 sm:py-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
+            <Package className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
             Inventory Entry
           </h1>
-          <p className="text-muted-foreground text-lg">Professional HVAC & Plumbing Inventory Management</p>
+          <p className="text-muted-foreground text-sm sm:text-base lg:text-lg px-4">Professional HVAC & Plumbing Inventory Management</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl">Project Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="siteName" className="text-base font-semibold">Site Name</Label>
-                  <Input
-                    id="siteName"
-                    placeholder="e.g. working address"
-                    value={formData.siteName}
-                    onChange={(e) => setFormData({...formData, siteName: e.target.value})}
-                    className="mt-2 text-base h-12"
-                  />
+        <ScrollArea className="h-[calc(100vh-12rem)]">
+          <form id="inventory-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 pb-20 sm:pb-24">
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
+              <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                <CardTitle className="text-lg sm:text-xl">Project Information</CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 sm:px-6">
+                <div className="space-y-3 sm:space-y-4">
+                  <div>
+                    <Label htmlFor="siteName" className="text-sm sm:text-base font-semibold">Site Name</Label>
+                    <Input
+                      id="siteName"
+                      placeholder="e.g. working address"
+                      value={formData.siteName}
+                      onChange={(e) => setFormData({...formData, siteName: e.target.value})}
+                      className="mt-1 sm:mt-2 text-sm sm:text-base h-10 sm:h-12"
+                    />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Search and Filter Bar */}
-          <SearchAndFilter
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            selectedCategories={selectedCategories}
-            onCategoryChange={setSelectedCategories}
-            showOnlySelected={showOnlySelected}
-            onShowSelectedChange={setShowOnlySelected}
-            itemCounts={itemCounts}
-          />
+            {/* Search and Filter Bar */}
+            <SearchAndFilter
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedCategories={selectedCategories}
+              onCategoryChange={setSelectedCategories}
+              showOnlySelected={showOnlySelected}
+              onShowSelectedChange={setShowOnlySelected}
+              itemCounts={itemCounts}
+            />
 
-          {/* Inventory Sections */}
-          {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
-            <PipeSection 
-              pipes={formData.pipes}
-              onUpdate={(pipes) => setFormData({...formData, pipes})}
-            />
-          )}
-          
-          {(shouldShowSection('insulation') && (!searchTerm || matchesSearch('insulation'))) && (
-            <InsulationSection 
-              insulation={formData.insulation}
-              onUpdate={(insulation) => setFormData({...formData, insulation})}
-            />
-          )}
-          
-          {(shouldShowSection('fittings') && (!searchTerm || matchesSearch('fittings elbow coupling'))) && (
-            <FittingSection 
-              fittings={formData.fittings}
-              onUpdate={(fittings) => setFormData({...formData, fittings})}
-            />
-          )}
-          
-          {(shouldShowSection('nuts') && (!searchTerm || matchesSearch('flare nuts'))) && (
-            <NutSection 
-              nuts={formData.nuts}
-              onUpdate={(nuts) => setFormData({...formData, nuts})}
-            />
-          )}
-
-          {(shouldShowSection('tools') || shouldShowSection('materials')) && (
-            (!searchTerm || matchesSearch('flaring tool brazing rods butane lpg drain heater hatlon oxygen nitrogen ac gas')) && (
-              <SimpleSection 
-                formData={formData}
-                onUpdate={setFormData}
+            {/* Inventory Sections */}
+            <div className="space-y-4 sm:space-y-6">
+            {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
+              <PipeSection 
+                pipes={formData.pipes}
+                onUpdate={(pipes) => setFormData({...formData, pipes})}
               />
-            )
-          )}
-          
-          {(shouldShowSection('wires') && (!searchTerm || matchesSearch('wires electrical'))) && (
-            <WireSection 
-              wires={formData.wires}
-              onUpdate={(wires) => setFormData({...formData, wires})}
-            />
-          )}
+            )}
+            
+            {(shouldShowSection('insulation') && (!searchTerm || matchesSearch('insulation'))) && (
+              <InsulationSection 
+                insulation={formData.insulation}
+                onUpdate={(insulation) => setFormData({...formData, insulation})}
+              />
+            )}
+            
+            {(shouldShowSection('fittings') && (!searchTerm || matchesSearch('fittings elbow coupling'))) && (
+              <FittingSection 
+                fittings={formData.fittings}
+                onUpdate={(fittings) => setFormData({...formData, fittings})}
+              />
+            )}
+            
+            {(shouldShowSection('nuts') && (!searchTerm || matchesSearch('flare nuts'))) && (
+              <NutSection 
+                nuts={formData.nuts}
+                onUpdate={(nuts) => setFormData({...formData, nuts})}
+              />
+            )}
 
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-secondary/30">
-            <CardContent className="pt-6">
-              <div className="flex gap-4 flex-col sm:flex-row">
-                <Button type="submit" className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-primary to-info hover:from-primary/90 hover:to-info/90">
-                  <Package className="mr-2 h-5 w-5" />
-                  Generate Summary
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={copyToClipboard}
-                  className="h-14 px-6"
-                >
-                  <Clipboard className="mr-2 h-5 w-5" />
-                  Copy
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </form>
+            {(shouldShowSection('tools') || shouldShowSection('materials')) && (
+              (!searchTerm || matchesSearch('flaring tool brazing rods butane lpg drain heater hatlon oxygen nitrogen ac gas')) && (
+                <SimpleSection 
+                  formData={formData}
+                  onUpdate={setFormData}
+                />
+              )
+            )}
+            
+            {(shouldShowSection('wires') && (!searchTerm || matchesSearch('wires electrical'))) && (
+              <WireSection 
+                wires={formData.wires}
+                onUpdate={(wires) => setFormData({...formData, wires})}
+              />
+            )}
+            </div>
+          </form>
+        </ScrollArea>
+
+        {/* Fixed Action Buttons at Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-3 sm:p-4">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex gap-3 sm:gap-4 flex-col sm:flex-row">
+              <Button 
+                type="submit" 
+                form="inventory-form"
+                className="flex-1 h-12 sm:h-14 text-sm sm:text-lg font-semibold bg-gradient-to-r from-primary to-info hover:from-primary/90 hover:to-info/90"
+                onClick={handleSubmit}
+              >
+                <Package className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                Generate Summary
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={copyToClipboard}
+                className="h-12 sm:h-14 px-4 sm:px-6 text-sm sm:text-base"
+              >
+                <Clipboard className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                Copy
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
