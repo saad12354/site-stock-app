@@ -45,6 +45,7 @@ export const InventoryForm = () => {
     mode: 'onChange', // Enable real-time validation
     defaultValues: {
       siteName: '',
+      siteLocation: '',
       pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
       insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
       fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, selected: false })),
@@ -144,6 +145,10 @@ export const InventoryForm = () => {
     
     if (data.siteName) {
       out.unshift(`Project: ${data.siteName}\n`);
+    }
+    
+    if (data.siteLocation) {
+      out.unshift(`Location: ${data.siteLocation}\n`);
     }
 
     // Flaring Tool
@@ -368,6 +373,23 @@ export const InventoryForm = () => {
                     <FormField
                       control={form.control}
                       name="siteName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base font-semibold">Site Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter project or site name"
+                              {...field}
+                              className="mt-1 sm:mt-2 text-sm sm:text-base h-10 sm:h-12"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="siteLocation"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm sm:text-base font-semibold">Site Location</FormLabel>

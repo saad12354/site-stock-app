@@ -58,6 +58,9 @@ export const inventoryFormSchema = z.object({
   siteName: z.string()
     .min(1, 'Site name is required')
     .max(100, 'Site name cannot exceed 100 characters'),
+  siteLocation: z.string()
+    .min(1, 'Site location is required')
+    .max(200, 'Site location cannot exceed 200 characters'),
   pipes: z.array(pipeSchema),
   insulation: z.array(insulationSchema),
   fittings: z.array(fittingSchema),

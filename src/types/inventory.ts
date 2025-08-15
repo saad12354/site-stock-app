@@ -36,6 +36,7 @@ export interface WireData {
 
 export interface InventoryFormData {
   siteName: string;
+  siteLocation: string;
   pipes: PipeData[];
   insulation: InsulationData[];
   fittings: FittingData[];
