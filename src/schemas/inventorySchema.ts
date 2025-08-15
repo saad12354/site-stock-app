@@ -7,6 +7,7 @@ const pipeSchema = z.object({
     .min(0, 'Quantity must be at least 0')
     .max(1000, 'Quantity cannot exceed 1000'),
   type: z.enum(['Soft', 'Hard']),
+  unit: z.enum(['ft', 'm']),
   selected: z.boolean(),
 });
 

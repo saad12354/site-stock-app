@@ -45,7 +45,7 @@ export const InventoryForm = () => {
     mode: 'onChange', // Enable real-time validation
     defaultValues: {
       siteName: '',
-      pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', selected: false })),
+      pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
       insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
       fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, selected: false })),
       nuts: NUT_SIZES.map(size => ({ size, quantity: 0, selected: false })),
@@ -154,7 +154,7 @@ export const InventoryForm = () => {
     // Copper pipes
     const pipeOutputs = data.pipes
       .filter(pipe => pipe.selected && pipe.quantity > 0)
-      .map(pipe => `${pipe.size}" ${pipe.type} ×${pipe.quantity}`);
+      .map(pipe => `${pipe.size}" ${pipe.type} ×${pipe.quantity} piece (${pipe.unit})`);
     
     if (pipeOutputs.length) {
       out.push(`🔥 Copper Pipes: ${pipeOutputs.join(', ')}`);

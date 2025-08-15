@@ -2,6 +2,7 @@ export interface PipeData {
   size: string;
   quantity: number;
   type: 'Soft' | 'Hard';
+  unit: 'ft' | 'm';
   selected: boolean;
 }
 

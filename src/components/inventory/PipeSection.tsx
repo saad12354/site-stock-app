@@ -45,7 +45,7 @@ export const PipeSection: React.FC<PipeSectionProps> = ({ form }) => {
                 )}
               />
               
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
                 <div>
                   <Label className="font-semibold text-base">{pipe.size}"</Label>
                 </div>
@@ -115,10 +115,50 @@ export const PipeSection: React.FC<PipeSectionProps> = ({ form }) => {
                   />
                 </div>
                 
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Unit</Label>
+                  <FormField
+                    control={form.control}
+                    name={`pipes.${index}.unit`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => field.onChange('ft')}
+                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                field.value === 'ft'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                              }`}
+                              disabled={!pipe.selected}
+                            >
+                              ft
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => field.onChange('m')}
+                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                field.value === 'm'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                              }`}
+                              disabled={!pipe.selected}
+                            >
+                              m
+                            </button>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
                 <div className="text-sm text-muted-foreground">
                   {pipe.selected && pipe.quantity > 0 && (
                     <span className="text-success font-medium">
-                      ✓ {pipe.quantity} × {pipe.type}
+                      ✓ {pipe.quantity} piece × {pipe.type} ({pipe.unit})
                     </span>
                   )}
                 </div>
