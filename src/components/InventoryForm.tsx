@@ -370,10 +370,10 @@ export const InventoryForm = () => {
                       name="siteName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm sm:text-base font-semibold">Site Name</FormLabel>
+                          <FormLabel className="text-sm sm:text-base font-semibold">Site Location</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="e.g. working address"
+                              placeholder="Enter site address or location"
                               {...field}
                               className="mt-1 sm:mt-2 text-sm sm:text-base h-10 sm:h-12"
                             />
