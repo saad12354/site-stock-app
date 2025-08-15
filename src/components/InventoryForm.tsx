@@ -174,8 +174,8 @@ export const InventoryForm = () => {
       .filter(fit => fit.selected)
       .map(fit => {
         const fittings = [];
-        if (fit.elbowQty > 0) fittings.push(`Elbow ×${fit.elbowQty}`);
-        if (fit.couplingQty > 0) fittings.push(`Coupling ×${fit.couplingQty}`);
+        if (fit.elbowQty > 0) fittings.push(`Elbow ×${fit.elbowQty} piece`);
+        if (fit.couplingQty > 0) fittings.push(`Coupling ×${fit.couplingQty} piece`);
         return fittings.length > 0 ? `${fit.size}" ${fittings.join(', ')}` : '';
       })
       .filter(Boolean);
@@ -187,7 +187,7 @@ export const InventoryForm = () => {
     // Flare Nuts
     const nutOutputs = data.nuts
       .filter(nut => nut.selected && nut.quantity > 0)
-      .map(nut => `${nut.size}" ×${nut.quantity}`);
+      .map(nut => `${nut.size}" ×${nut.quantity} piece`);
     
     if (nutOutputs.length) {
       out.push(`🔩 Flare Nuts: ${nutOutputs.join(', ')}`);
