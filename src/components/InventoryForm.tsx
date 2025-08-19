@@ -12,17 +12,19 @@ import { useToast } from '@/hooks/use-toast';
 import { inventoryFormSchema, type InventoryFormValues } from '@/schemas/inventorySchema';
 import { 
   InventoryFormData, 
-  PipeData, 
+  DrainPipeData, 
   InsulationData, 
   FittingData, 
   NutData, 
   WireData,
   PIPE_SIZES,
+  DRAIN_PIPE_SIZES,
   FITTING_SIZES,
   NUT_SIZES,
   WIRE_SIZES
 } from '@/types/inventory';
 import { PipeSection } from './inventory/PipeSection';
+import { DrainPipeSection } from './inventory/DrainPipeSection';
 import { InsulationSection } from './inventory/InsulationSection';
 import { FittingSection } from './inventory/FittingSection';
 import { NutSection } from './inventory/NutSection';
@@ -47,8 +49,9 @@ export const InventoryForm = () => {
       siteName: '',
       siteLocation: '',
       pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
+      drainPipes: DRAIN_PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
       insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
-      fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, selected: false })),
+      fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, elbowFeet: false, couplingFeet: false, selected: false })),
       nuts: NUT_SIZES.map(size => ({ size, quantity: 0, selected: false })),
       flaringTool: false,
       brazingRods: 0,
@@ -65,6 +68,8 @@ export const InventoryForm = () => {
       cableTray: 0,
       casingPatti: 0,
       clamPatti: 0,
+      asbestosRopeQty: 0,
+      asbestosRopeMeter: false,
       wires: WIRE_SIZES.map(size => ({ size, length: 0, cores: 2, selected: false })),
       oxygenCylinders: 0,
       nitrogenCylinders: 0,
@@ -165,6 +170,15 @@ export const InventoryForm = () => {
       out.push(`🔥 Copper Pipes: ${pipeOutputs.join(', ')}`);
     }
 
+    // Drain pipes
+    const drainPipeOutputs = data.drainPipes
+      .filter(pipe => pipe.selected && pipe.quantity > 0)
+      .map(pipe => `${pipe.size}" ${pipe.type} ×${pipe.quantity} piece (${pipe.unit})`);
+    
+    if (drainPipeOutputs.length) {
+      out.push(`💧 Drain Pipes: ${drainPipeOutputs.join(', ')}`);
+    }
+
     // Insulation
     const insulationOutputs = data.insulation
       .filter(ins => ins.selected && (ins.volume > 0 || ins.length > 0))
@@ -179,8 +193,8 @@ export const InventoryForm = () => {
       .filter(fit => fit.selected)
       .map(fit => {
         const fittings = [];
-        if (fit.elbowQty > 0) fittings.push(`Elbow ×${fit.elbowQty} piece`);
-        if (fit.couplingQty > 0) fittings.push(`Coupling ×${fit.couplingQty} piece`);
+        if (fit.elbowQty > 0) fittings.push(`Elbow ×${fit.elbowQty} piece${fit.elbowFeet ? ' (ft)' : ''}`);
+        if (fit.couplingQty > 0) fittings.push(`Coupling ×${fit.couplingQty} piece${fit.couplingFeet ? ' (ft)' : ''}`);
         return fittings.length > 0 ? `${fit.size}" ${fittings.join(', ')}` : '';
       })
       .filter(Boolean);
@@ -234,6 +248,11 @@ export const InventoryForm = () => {
 
     if (data.acGas) {
       out.push(`❄️ AC Gas: ${data.acGas} type/kg`);
+    }
+
+    // Asbestos rope
+    if (data.asbestosRopeQty > 0) {
+      out.push(`🪢 Asbestos Rope: ×${data.asbestosRopeQty} ${data.asbestosRopeMeter ? 'meter' : 'piece'}`);
     }
 
     const message = '📋 INVENTORY SUMMARY\n' + '═'.repeat(30) + '\n\n' + out.join('\n\n') + '\n\n' + '═'.repeat(30);
@@ -423,6 +442,12 @@ export const InventoryForm = () => {
               <div className="space-y-4 sm:space-y-6">
               {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('copper pipes'))) && (
                 <PipeSection 
+                  form={form}
+                />
+              )}
+              
+              {(shouldShowSection('pipes') && (!searchTerm || matchesSearch('drain pipes'))) && (
+                <DrainPipeSection 
                   form={form}
                 />
               )}

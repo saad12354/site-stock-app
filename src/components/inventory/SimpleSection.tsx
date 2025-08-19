@@ -295,6 +295,45 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ form }) => {
                   </FormItem>
                 )}
               />
+              
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="asbestosRopeQty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">🪢 Asbestos Rope Quantity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="1000"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          placeholder="Quantity"
+                          className="mt-2 h-12"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="asbestosRopeMeter"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-base font-medium cursor-pointer">Meter (m)</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
         </CardContent>

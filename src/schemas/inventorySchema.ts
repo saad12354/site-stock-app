@@ -11,6 +11,16 @@ const pipeSchema = z.object({
   selected: z.boolean(),
 });
 
+const drainPipeSchema = z.object({
+  size: z.string(),
+  quantity: z.number()
+    .min(0, 'Quantity must be at least 0')
+    .max(1000, 'Quantity cannot exceed 1000'),
+  type: z.enum(['Soft', 'Hard']),
+  unit: z.enum(['ft', 'm']),
+  selected: z.boolean(),
+});
+
 const insulationSchema = z.object({
   size: z.string(),
   volume: z.number()
@@ -31,6 +41,8 @@ const fittingSchema = z.object({
   couplingQty: z.number()
     .min(0, 'Coupling quantity must be at least 0')
     .max(1000, 'Coupling quantity cannot exceed 1000'),
+  elbowFeet: z.boolean(),
+  couplingFeet: z.boolean(),
   selected: z.boolean(),
 });
 
@@ -62,6 +74,7 @@ export const inventoryFormSchema = z.object({
     .min(1, 'Site location is required')
     .max(200, 'Site location cannot exceed 200 characters'),
   pipes: z.array(pipeSchema),
+  drainPipes: z.array(drainPipeSchema),
   insulation: z.array(insulationSchema),
   fittings: z.array(fittingSchema),
   nuts: z.array(nutSchema),
@@ -104,6 +117,10 @@ export const inventoryFormSchema = z.object({
   clamPatti: z.number()
     .min(0, 'Clam patti must be at least 0')
     .max(1000, 'Clam patti cannot exceed 1000'),
+  asbestosRopeQty: z.number()
+    .min(0, 'Asbestos rope quantity must be at least 0')
+    .max(1000, 'Asbestos rope quantity cannot exceed 1000'),
+  asbestosRopeMeter: z.boolean(),
   wires: z.array(wireSchema),
   oxygenCylinders: z.number()
     .min(0, 'Oxygen cylinders must be at least 0')
