@@ -18,7 +18,7 @@ import {
   NutData, 
   WireData,
   PIPE_SIZES,
-  DRAIN_PIPE_SIZES,
+  DRAIN_PIPE_TYPES,
   FITTING_SIZES,
   NUT_SIZES,
   WIRE_SIZES
@@ -49,7 +49,13 @@ export const InventoryForm = () => {
       siteName: '',
       siteLocation: '',
       pipes: PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
-      drainPipes: DRAIN_PIPE_SIZES.map(size => ({ size, quantity: 0, type: 'Soft', unit: 'ft', selected: false })),
+      drainPipes: DRAIN_PIPE_TYPES.map(type => ({ 
+        type: type as 'CPVC' | 'PVC' | 'UPVC', 
+        elbowQty: 0, 
+        couplingQty: 0, 
+        unit: 'ft' as const, 
+        selected: false 
+      })),
       insulation: PIPE_SIZES.map(size => ({ size, volume: 0, length: 0, unit: 'ft', selected: false })),
       fittings: FITTING_SIZES.map(size => ({ size, elbowQty: 0, couplingQty: 0, elbowFeet: false, couplingFeet: false, selected: false })),
       nuts: NUT_SIZES.map(size => ({ size, quantity: 0, selected: false })),
@@ -172,11 +178,16 @@ export const InventoryForm = () => {
 
     // Drain pipes
     const drainPipeOutputs = data.drainPipes
-      .filter(pipe => pipe.selected && pipe.quantity > 0)
-      .map(pipe => `${pipe.size}" ${pipe.type} ×${pipe.quantity} piece (${pipe.unit})`);
+      .filter(pipe => pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0))
+      .map(pipe => {
+        const parts = [];
+        if (pipe.elbowQty > 0) parts.push(`Elbow ×${pipe.elbowQty}`);
+        if (pipe.couplingQty > 0) parts.push(`Coupling ×${pipe.couplingQty}`);
+        return `${pipe.type} ${parts.join(', ')} (${pipe.unit})`;
+      });
     
     if (drainPipeOutputs.length) {
-      out.push(`💧 Drain Pipes: ${drainPipeOutputs.join(', ')}`);
+      out.push(`💧 Drain Pipes: ${drainPipeOutputs.join(' | ')}`);
     }
 
     // Insulation

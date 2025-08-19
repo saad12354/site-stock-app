@@ -12,11 +12,13 @@ const pipeSchema = z.object({
 });
 
 const drainPipeSchema = z.object({
-  size: z.string(),
-  quantity: z.number()
-    .min(0, 'Quantity must be at least 0')
-    .max(1000, 'Quantity cannot exceed 1000'),
-  type: z.enum(['Soft', 'Hard']),
+  type: z.enum(['CPVC', 'PVC', 'UPVC']),
+  elbowQty: z.number()
+    .min(0, 'Elbow quantity must be at least 0')
+    .max(1000, 'Elbow quantity cannot exceed 1000'),
+  couplingQty: z.number()
+    .min(0, 'Coupling quantity must be at least 0')
+    .max(1000, 'Coupling quantity cannot exceed 1000'),
   unit: z.enum(['ft', 'm']),
   selected: z.boolean(),
 });

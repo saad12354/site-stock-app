@@ -28,7 +28,7 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
       <CardContent>
         <div className="space-y-4">
           {drainPipes.map((pipe, index) => (
-            <div key={pipe.size} className="flex items-center gap-4 p-4 rounded-lg border bg-background/50 hover:bg-background/80 transition-colors">
+            <div key={pipe.type} className="flex items-center gap-4 p-4 rounded-lg border bg-background/50 hover:bg-background/80 transition-colors">
               <FormField
                 control={form.control}
                 name={`drainPipes.${index}.selected`}
@@ -45,16 +45,16 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                 )}
               />
               
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                 <div>
-                  <Label className="font-semibold text-base">{pipe.size}"</Label>
+                  <Label className="font-semibold text-base">{pipe.type}</Label>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Quantity</Label>
+                  <Label className="text-sm font-medium">Elbow Qty</Label>
                   <FormField
                     control={form.control}
-                    name={`drainPipes.${index}.quantity`}
+                    name={`drainPipes.${index}.elbowQty`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -76,40 +76,25 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Type</Label>
+                  <Label className="text-sm font-medium">Coupling Qty</Label>
                   <FormField
                     control={form.control}
-                    name={`drainPipes.${index}.type`}
+                    name={`drainPipes.${index}.couplingQty`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => field.onChange('Soft')}
-                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                field.value === 'Soft'
-                                  ? 'bg-success text-success-foreground'
-                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                              }`}
-                              disabled={!pipe.selected}
-                            >
-                              Soft
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => field.onChange('Hard')}
-                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                                field.value === 'Hard'
-                                  ? 'bg-success text-success-foreground'
-                                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                              }`}
-                              disabled={!pipe.selected}
-                            >
-                              Hard
-                            </button>
-                          </div>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="1000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Qty"
+                            className="h-10"
+                            disabled={!pipe.selected}
+                          />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -154,14 +139,14 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                     )}
                   />
                 </div>
-                
-                <div className="text-sm text-muted-foreground">
-                  {pipe.selected && pipe.quantity > 0 && (
-                    <span className="text-success font-medium">
-                      ✓ {pipe.quantity} piece × {pipe.type} ({pipe.unit})
-                    </span>
-                  )}
-                </div>
+              </div>
+              
+              <div className="text-sm text-muted-foreground min-w-[120px]">
+                {pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0) && (
+                  <span className="text-success font-medium">
+                    ✓ E:{pipe.elbowQty} C:{pipe.couplingQty} ({pipe.unit})
+                  </span>
+                )}
               </div>
             </div>
           ))}
