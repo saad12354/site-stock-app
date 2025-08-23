@@ -243,6 +243,10 @@ export const InventoryForm = () => {
       out.push(`📏 Hatlon: ${data.hatlonLength} ${data.hatlonUnit}`);
     }
 
+    if (data.monsoonTapeLength > 0 && data.monsoonTapeQty > 0) {
+      out.push(`🎞️ Monsoon Tape: ${data.monsoonTapeLength} length ×${data.monsoonTapeQty} qty`);
+    }
+
     // Wires
     const wireOutputs = data.wires
       .filter(wire => wire.selected && wire.length > 0)

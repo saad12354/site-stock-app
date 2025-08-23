@@ -173,6 +173,50 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ form }) => {
                 )}
               />
               
+              <FormField
+                control={form.control}
+                name="monsoonTapeLength"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">🎞️ Monsoon Tape Length</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="1000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Length"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="monsoonTapeQty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">🎞️ Monsoon Tape Quantity</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Quantity"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <div className="space-y-4">
                 <FormField
                   control={form.control}
