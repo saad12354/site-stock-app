@@ -53,6 +53,7 @@ export const InventoryForm = () => {
         type: type as 'CPVC' | 'PVC' | 'UPVC', 
         elbowQty: 0, 
         couplingQty: 0, 
+        solventQty: 0,
         unit: 'ft' as const, 
         selected: false 
       })),
@@ -76,6 +77,7 @@ export const InventoryForm = () => {
       clamPatti: 0,
       asbestosRopeQty: 0,
       asbestosRopeMeter: false,
+      expansionWall: 0,
       wires: WIRE_SIZES.map(size => ({ size, length: 0, cores: 2, selected: false })),
       oxygenCylinders: 0,
       nitrogenCylinders: 0,
@@ -178,11 +180,12 @@ export const InventoryForm = () => {
 
     // Drain pipes
     const drainPipeOutputs = data.drainPipes
-      .filter(pipe => pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0))
+      .filter(pipe => pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0 || pipe.solventQty > 0))
       .map(pipe => {
         const parts = [];
         if (pipe.elbowQty > 0) parts.push(`Elbow ×${pipe.elbowQty}`);
         if (pipe.couplingQty > 0) parts.push(`Coupling ×${pipe.couplingQty}`);
+        if (pipe.solventQty > 0) parts.push(`Solvent ${pipe.solventQty}g`);
         return `${pipe.type} ${parts.join(', ')} (${pipe.unit})`;
       });
     
@@ -264,6 +267,10 @@ export const InventoryForm = () => {
     // Asbestos rope
     if (data.asbestosRopeQty > 0) {
       out.push(`🪢 Asbestos Rope: ×${data.asbestosRopeQty} ${data.asbestosRopeMeter ? 'meter' : 'piece'}`);
+    }
+
+    if (data.expansionWall > 0) {
+      out.push(`🧱 Expansion Wall: ${data.expansionWall} pieces`);
     }
 
     const message = '📋 INVENTORY SUMMARY\n' + '═'.repeat(30) + '\n\n' + out.join('\n\n') + '\n\n' + '═'.repeat(30);

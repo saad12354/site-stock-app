@@ -19,6 +19,9 @@ const drainPipeSchema = z.object({
   couplingQty: z.number()
     .min(0, 'Coupling quantity must be at least 0')
     .max(1000, 'Coupling quantity cannot exceed 1000'),
+  solventQty: z.number()
+    .min(0, 'Solvent quantity must be at least 0')
+    .max(10000, 'Solvent quantity cannot exceed 10000'),
   unit: z.enum(['ft', 'm']),
   selected: z.boolean(),
 });
@@ -123,6 +126,9 @@ export const inventoryFormSchema = z.object({
     .min(0, 'Asbestos rope quantity must be at least 0')
     .max(1000, 'Asbestos rope quantity cannot exceed 1000'),
   asbestosRopeMeter: z.boolean(),
+  expansionWall: z.number()
+    .min(0, 'Expansion wall must be at least 0')
+    .max(1000, 'Expansion wall cannot exceed 1000'),
   wires: z.array(wireSchema),
   oxygenCylinders: z.number()
     .min(0, 'Oxygen cylinders must be at least 0')

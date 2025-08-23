@@ -33,6 +33,7 @@ export interface DrainPipeData {
   type: 'CPVC' | 'PVC' | 'UPVC';
   elbowQty: number;
   couplingQty: number;
+  solventQty: number;
   unit: 'ft' | 'm';
   selected: boolean;
 }
@@ -69,6 +70,7 @@ export interface InventoryFormData {
   clamPatti: number;
   asbestosRopeQty: number;
   asbestosRopeMeter: boolean;
+  expansionWall: number;
   wires: WireData[];
   oxygenCylinders: number;
   nitrogenCylinders: number;

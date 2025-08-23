@@ -45,7 +45,7 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                 )}
               />
               
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
                 <div>
                   <Label className="font-semibold text-base">{pipe.type}</Label>
                 </div>
@@ -101,6 +101,31 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                 </div>
                 
                 <div className="space-y-2">
+                  <Label className="text-sm font-medium">Solvent (g)</Label>
+                  <FormField
+                    control={form.control}
+                    name={`drainPipes.${index}.solventQty`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="10000"
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                            placeholder="Grams"
+                            className="h-10"
+                            disabled={!pipe.selected}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <div className="space-y-2">
                   <Label className="text-sm font-medium">Unit</Label>
                   <FormField
                     control={form.control}
@@ -141,10 +166,10 @@ export const DrainPipeSection: React.FC<DrainPipeSectionProps> = ({ form }) => {
                 </div>
               </div>
               
-              <div className="text-sm text-muted-foreground min-w-[120px]">
-                {pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0) && (
+              <div className="text-sm text-muted-foreground min-w-[140px]">
+                {pipe.selected && (pipe.elbowQty > 0 || pipe.couplingQty > 0 || pipe.solventQty > 0) && (
                   <span className="text-success font-medium">
-                    ✓ E:{pipe.elbowQty} C:{pipe.couplingQty} ({pipe.unit})
+                    ✓ E:{pipe.elbowQty} C:{pipe.couplingQty} S:{pipe.solventQty}g ({pipe.unit})
                   </span>
                 )}
               </div>

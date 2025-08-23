@@ -334,6 +334,28 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ form }) => {
                   )}
                 />
               </div>
+              
+              <FormField
+                control={form.control}
+                name="expansionWall"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">🧱 Expansion Wall</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="1000"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                        placeholder="Quantity"
+                        className="mt-2 h-12"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
         </CardContent>
