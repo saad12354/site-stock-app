@@ -62,6 +62,7 @@ export interface InventoryFormData {
   hatlonUnit: 'ft' | 'm' | '';
   monsoonTapeLength: number;
   monsoonTapeQty: number;
+  teflonTapeQty: number;
   wireTapeLength: number;
   wireTapeQty: number;
   cableTies: number;

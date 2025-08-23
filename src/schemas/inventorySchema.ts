@@ -104,6 +104,9 @@ export const inventoryFormSchema = z.object({
   monsoonTapeQty: z.number()
     .min(0, 'Monsoon tape quantity must be at least 0')
     .max(100, 'Monsoon tape quantity cannot exceed 100'),
+  teflonTapeQty: z.number()
+    .min(0, 'Teflon tape quantity must be at least 0')
+    .max(100, 'Teflon tape quantity cannot exceed 100'),
   wireTapeLength: z.number()
     .min(0, 'Wire tape length must be at least 0')
     .max(1000, 'Wire tape length cannot exceed 1000'),
