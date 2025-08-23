@@ -386,7 +386,7 @@ export const InventoryForm = () => {
         <div className="text-center py-6 sm:py-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
             <Package className="text-primary w-6 h-6 sm:w-8 sm:h-8" />
-            Inventory Entry
+            National Refrigeration
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base lg:text-lg px-4">Professional HVAC & Plumbing Inventory Management</p>
         </div>
