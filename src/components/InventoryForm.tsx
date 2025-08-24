@@ -72,6 +72,7 @@ export const InventoryForm = () => {
       teflonTapeQty: 0,
       tarfeltLength: 0,
       tarfeltQty: 0,
+      liquidPuffQty: 0,
       wireTapeLength: 0,
       wireTapeQty: 0,
       cableTies: 0,
@@ -256,6 +257,10 @@ export const InventoryForm = () => {
 
     if (data.tarfeltLength > 0 && data.tarfeltQty > 0) {
       out.push(`🧱 Tarfelt: ${data.tarfeltLength}m ×${data.tarfeltQty} qty`);
+    }
+
+    if (data.liquidPuffQty > 0) {
+      out.push(`🧪 Liquid Puff: ${data.liquidPuffQty}L`);
     }
 
     // Wires
