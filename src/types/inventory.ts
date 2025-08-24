@@ -63,6 +63,8 @@ export interface InventoryFormData {
   monsoonTapeLength: number;
   monsoonTapeQty: number;
   teflonTapeQty: number;
+  tarfeltLength: number;
+  tarfeltQty: number;
   wireTapeLength: number;
   wireTapeQty: number;
   cableTies: number;

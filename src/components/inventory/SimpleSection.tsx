@@ -239,6 +239,52 @@ export const SimpleSection: React.FC<SimpleSectionProps> = ({ form }) => {
                 )}
               />
               
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="tarfeltLength"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">🧱 Tarfelt Length (m)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="1000"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          placeholder="Length in meters"
+                          className="mt-2 h-12"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="tarfeltQty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">🧱 Tarfelt Quantity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          placeholder="Quantity"
+                          className="mt-2 h-12"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
               <div className="space-y-4">
                 <FormField
                   control={form.control}
